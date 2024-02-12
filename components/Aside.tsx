@@ -23,7 +23,7 @@ const Aside: FC<AsideProps> = ({}) => {
       id: 3,
       step: "step 3",
       name: "ADD-ONS",
-      pathname: "/add-ons",
+      pathname: "/add_ons",
     },
     {
       id: 4,

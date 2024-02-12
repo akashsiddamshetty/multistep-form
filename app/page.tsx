@@ -7,101 +7,83 @@ import Input from "@/components/Input";
 import Nav from "@/components/Nav";
 import Section from "@/components/Section";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface formValues {
   name: string;
   email: string;
   phone_number: string;
 }
-interface formErrors {
-  name: boolean;
-  email: boolean;
-  phone_number: boolean;
+
+interface FormField {
+  label: string;
+  name: keyof formValues;
+  id: string;
+  placeholder: string;
+  pattern: RegExp;
 }
+
+const fields: FormField[] = [
+  {
+    label: "Name",
+    name: "name",
+    id: "name",
+    placeholder: "e.g. Stephen King",
+    pattern: /^.+$/,
+  },
+  {
+    label: "Email Address",
+    name: "email",
+    id: "email",
+    placeholder: "e.g. stephenking@lorem.com",
+    pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+  },
+  {
+    label: "Phone Number",
+    name: "phone_number",
+    id: "phone_number",
+    placeholder: "e.g. +1 234 567 890",
+    pattern: /^\d{10}$/,
+  },
+];
+
 export default function Home() {
   const router = useRouter();
-  const initalValues = { name: "", email: "", phone_number: "" };
-  const initalErrors = {
-    name: false,
-    email: false,
-    phone_number: false,
-  };
-  const [formValues, setFormValues] = useState<formValues>(initalValues);
-  const [formErrors, setFormErrors] = useState<formErrors>(initalErrors);
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<formValues>();
 
-  const validateForm = () => {
-    let isValid = false;
-    const newErrors = { ...initalErrors };
-
-    if (!formValues.name) {
-      newErrors.name = true;
-      isValid = true;
-    }
-
-    if (!formValues.email) {
-      newErrors.email = true;
-      isValid = true;
-    }
-
-    if (!formValues.phone_number) {
-      newErrors.phone_number = true;
-      isValid = true;
-    }
-
-    setFormErrors(newErrors);
-    return isValid;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) {
-      router.push("/select_plan");
-    }
-  };
-
+  const onSubmit = handleSubmit(() => {
+    router.push("/select_plan");
+  });
   return (
     <Section>
       <Form>
         <H1>Personal info</H1>
         <H5>Please provide your name, email address, and phone number.</H5>
-        <Input
-          label="Name"
-          name="name"
-          id="name"
-          value={formValues.name}
-          errorMessage={formErrors.name}
-          placeholder="e.g. Stephen King"
-          required
-          onChange={(e) => handleChange(e)}
-        />
-        <Input
-          label="Email Address"
-          name="email"
-          id="email"
-          errorMessage={formErrors.email}
-          required
-          placeholder="e.g. stephenking@lorem.com"
-          onChange={(e) => handleChange(e)}
-        />
-        <Input
-          label="Phone Number"
-          name="phone_number"
-          id="phone_number"
-          errorMessage={formErrors.phone_number}
-          required
-          placeholder="e.g. +1 234 567 890"
-          onChange={(e) => handleChange(e)}
-        />
+        {fields.map((field, index) => {
+          const { name, id, label, placeholder, pattern } = field;
+          return (
+            <Input
+              id={id}
+              key={index}
+              label={label}
+              errorType={errors?.[name]?.type}
+              placeholder={placeholder}
+              {...register(name, {
+                required: true,
+                pattern: pattern,
+              })}
+            />
+          );
+        })}
       </Form>
       <Nav>
         <div></div>
-        <Button variant="submit" onClick={(e) => handleSubmit(e)}>
-          next step{" "}
+        <Button variant="submit" type="submit" onClick={() => onSubmit()}>
+          next step
         </Button>
       </Nav>
     </Section>

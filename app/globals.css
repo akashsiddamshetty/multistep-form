@@ -11,6 +11,6 @@ body {
   @apply bg-custom_bg font-Ubuntu;
 }
 
-span::first-letter{
+span::first-letter {
   text-transform: capitalize;
 }

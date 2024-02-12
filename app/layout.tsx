@@ -1,7 +1,8 @@
-import Main from "@/components/Main";
 import "./globals.css";
 import type { Metadata } from "next";
+import Main from "@/components/Main";
 import Aside from "@/components/Aside";
+import ReduxProvider from "@/redux/ReduxProvider";
 
 export const metadata: Metadata = {
   title: "Multi step form",
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="sm:flex w-full h-screen sm:items-center sm:justify-center">
-        <Main>
-          <Aside />
-          {children}
-        </Main>
+        <ReduxProvider>
+          <Main>
+            <Aside />
+            {children}
+          </Main>
+        </ReduxProvider>
       </body>
     </html>
   );
